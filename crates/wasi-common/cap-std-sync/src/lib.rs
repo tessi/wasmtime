@@ -49,7 +49,7 @@ pub use sched::sched_ctx;
 use crate::net::Socket;
 use cap_rand::RngCore;
 use std::path::Path;
-use wasi_common::{file::FileCaps, table::Table, Error, WasiCtx, WasiFile};
+use wasi_common::{file::FileCaps, table::Table, Error, WasiCtx, WasiFile, dir::DirCaps};
 
 pub struct WasiCtxBuilder(WasiCtx);
 
@@ -121,6 +121,11 @@ impl WasiCtxBuilder {
     pub fn preopened_dir(mut self, dir: Dir, guest_path: impl AsRef<Path>) -> Result<Self, Error> {
         let dir = Box::new(crate::dir::Dir::from_cap_std(dir));
         self.0.push_preopened_dir(dir, guest_path)?;
+        Ok(self)
+    }
+    pub fn preopened_dir_with_caps(mut self, dir: Dir, guest_path: impl AsRef<Path>, caps: DirCaps, file_caps: FileCaps) -> Result<Self, Error> {
+        let dir = Box::new(crate::dir::Dir::from_cap_std(dir));
+        self.0.push_preopened_dir_with_caps(dir, guest_path, caps, file_caps)?;
         Ok(self)
     }
     pub fn preopened_socket(mut self, fd: u32, socket: impl Into<Socket>) -> Result<Self, Error> {

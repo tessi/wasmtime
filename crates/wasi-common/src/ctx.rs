@@ -105,6 +105,16 @@ impl WasiCtx {
     ) -> Result<(), Error> {
         let caps = DirCaps::all();
         let file_caps = FileCaps::all();
+        self.push_preopened_dir_with_caps(dir, path, caps, file_caps)
+    }
+
+    pub fn push_preopened_dir_with_caps(
+        &mut self,
+        dir: Box<dyn WasiDir>,
+        path: impl AsRef<Path>,
+        caps: DirCaps,
+        file_caps: FileCaps,
+    ) -> Result<(), Error> {
         self.table().push(Box::new(DirEntry::new(
             caps,
             file_caps,
